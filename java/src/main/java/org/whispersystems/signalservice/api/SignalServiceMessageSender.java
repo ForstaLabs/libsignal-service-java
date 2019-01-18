@@ -143,17 +143,36 @@ public class SignalServiceMessageSender {
   public void sendMessage(List<SignalServiceAddress> recipients, SignalServiceDataMessage message)
       throws IOException, EncapsulatedExceptions
   {
+    sendMessage(recipients, message, true);
+  }
+
+  public void sendMessage(List<SignalServiceAddress> recipients, SignalServiceDataMessage message, boolean sendSync)
+      throws IOException, EncapsulatedExceptions
+  {
     byte[] content = createMessageContent(message);
     long timestamp = message.getTimestamp();
     byte[] syncMessage = createMultiDeviceSentTranscriptContent(content, Optional.<SignalServiceAddress>absent(), timestamp);
     try {
       sendMessage(recipients, timestamp, content, true);
     } finally {
-      try {
-        sendMessage(localAddress, timestamp, syncMessage, false);
-      } catch (UntrustedIdentityException e) {
-        throw new EncapsulatedExceptions(e);
+      if (sendSync) {
+        try {
+          sendMessage(localAddress, timestamp, syncMessage, false);
+        } catch (UntrustedIdentityException e) {
+          throw new EncapsulatedExceptions(e);
+        }
       }
+    }
+  }
+
+  public void sendSyncMessage(SignalServiceDataMessage message) throws IOException, EncapsulatedExceptions {
+    byte[] content = createMessageContent(message);
+    long timestamp = message.getTimestamp();
+    byte[] syncMessage = createMultiDeviceSentTranscriptContent(content, Optional.<SignalServiceAddress>absent(), timestamp);
+    try {
+      sendMessage(localAddress, timestamp, syncMessage, false);
+    } catch (UntrustedIdentityException e) {
+      throw new EncapsulatedExceptions(e);
     }
   }
 
