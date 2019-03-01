@@ -382,8 +382,8 @@ public class SignalServiceMessageSender {
   {
     for (int i=0;i<3;i++) {
       try {
-        OutgoingPushMessageList messages = getEncryptedMessages(socket, recipient, deviceId, timestamp, content, legacy);
-        return socket.sendMessage(messages);
+        OutgoingPushMessage message = getEncryptedMessage(socket, recipient, deviceId, timestamp, content, legacy);
+        return socket.sendDeviceMessage(recipient.getNumber(), deviceId, message);
       } catch (MismatchedDevicesException mde) {
         Log.w(TAG, mde);
         handleMismatchedDevices(socket, recipient, mde.getMismatchedDevices());
@@ -450,27 +450,13 @@ public class SignalServiceMessageSender {
     List<OutgoingPushMessage> messages = new LinkedList<>();
 
     for (int deviceId : store.getDeviceSessions(recipient.getNumber())) {
-      messages.add(getEncryptedMessage(socket, recipient, deviceId, plaintext, legacy));
+      messages.add(getEncryptedMessage(socket, recipient, deviceId, timestamp, plaintext, legacy));
     }
 
     return new OutgoingPushMessageList(recipient.getNumber(), timestamp, recipient.getRelay().orNull(), messages);
   }
 
-  private OutgoingPushMessageList getEncryptedMessages(PushServiceSocket socket,
-                                                       SignalServiceAddress recipient,
-                                                       int deviceId,
-                                                       long timestamp,
-                                                       byte[] plaintext,
-                                                       boolean legacy)
-      throws IOException, UntrustedIdentityException
-  {
-    List<OutgoingPushMessage> messages = new LinkedList<>();
-    messages.add(getEncryptedMessage(socket, recipient, deviceId, plaintext, legacy));
-
-    return new OutgoingPushMessageList(recipient.getNumber(), timestamp, recipient.getRelay().orNull(), messages);
-  }
-
-  private OutgoingPushMessage getEncryptedMessage(PushServiceSocket socket, SignalServiceAddress recipient, int deviceId, byte[] plaintext, boolean legacy)
+  private OutgoingPushMessage getEncryptedMessage(PushServiceSocket socket, SignalServiceAddress recipient, int deviceId, long timestamp, byte[] plaintext, boolean legacy)
       throws IOException, UntrustedIdentityException
   {
     SignalProtocolAddress signalProtocolAddress = new SignalProtocolAddress(recipient.getNumber(), deviceId);
@@ -498,7 +484,7 @@ public class SignalServiceMessageSender {
       }
     }
 
-    return cipher.encrypt(signalProtocolAddress, plaintext, legacy);
+    return cipher.encrypt(signalProtocolAddress, timestamp, plaintext, legacy);
   }
 
   private void handleMismatchedDevices(PushServiceSocket socket, SignalServiceAddress recipient,

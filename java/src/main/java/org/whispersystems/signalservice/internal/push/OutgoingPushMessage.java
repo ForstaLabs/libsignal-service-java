@@ -21,16 +21,19 @@ public class OutgoingPushMessage {
   private String body;
   @JsonProperty
   private String content;
+  @JsonProperty
+  private long timestamp;
 
   public OutgoingPushMessage(int type,
                              int destinationDeviceId,
                              int destinationRegistrationId,
-                             String legacyMessage, String content)
+                             String legacyMessage, String content, long timestamp)
   {
     this.type                      = type;
     this.destinationDeviceId       = destinationDeviceId;
     this.destinationRegistrationId = destinationRegistrationId;
     this.body                      = legacyMessage;
     this.content                   = content;
+    this.timestamp                 = timestamp;
   }
 }

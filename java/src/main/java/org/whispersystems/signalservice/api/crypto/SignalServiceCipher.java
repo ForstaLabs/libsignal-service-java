@@ -65,7 +65,7 @@ public class SignalServiceCipher {
     this.localAddress = localAddress;
   }
 
-  public OutgoingPushMessage encrypt(SignalProtocolAddress destination, byte[] unpaddedMessage, boolean legacy) {
+  public OutgoingPushMessage encrypt(SignalProtocolAddress destination, long timestamp, byte[] unpaddedMessage, boolean legacy) {
     SessionCipher        sessionCipher        = new SessionCipher(signalProtocolStore, destination);
     PushTransportDetails transportDetails     = new PushTransportDetails(sessionCipher.getSessionVersion());
     CiphertextMessage    message              = sessionCipher.encrypt(transportDetails.getPaddedMessageBody(unpaddedMessage));
@@ -81,7 +81,7 @@ public class SignalServiceCipher {
     }
 
     return new OutgoingPushMessage(type, destination.getDeviceId(), remoteRegistrationId,
-                                   legacy ? body : null, legacy ? null : body);
+                                   legacy ? body : null, legacy ? null : body, timestamp);
   }
 
   /**

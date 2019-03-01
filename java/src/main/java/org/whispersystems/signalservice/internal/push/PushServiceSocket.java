@@ -89,6 +89,7 @@ public class PushServiceSocket {
   private static final String DIRECTORY_TOKENS_PATH     = "/v1/directory/tokens";
   private static final String DIRECTORY_VERIFY_PATH     = "/v1/directory/%s";
   private static final String MESSAGE_PATH              = "/v1/messages/%s";
+  private static final String MESSAGE_PATH_DEVICE       = "/v1/messages/%s/%d";
   private static final String ACKNOWLEDGE_MESSAGE_PATH  = "/v1/messages/%s/%d";
   private static final String RECEIPT_PATH              = "/v1/receipt/%s/%d";
   private static final String ATTACHMENT_PATH           = "/v1/attachments/%s";
@@ -185,6 +186,19 @@ public class PushServiceSocket {
       else                      return JsonUtil.fromJson(responseText, SendMessageResponse.class);
     } catch (NotFoundException nfe) {
       throw new UnregisteredUserException(bundle.getDestination(), nfe);
+    }
+  }
+
+  public SendMessageResponse sendDeviceMessage(String address, int deviceId, OutgoingPushMessage bundle)
+      throws IOException
+  {
+    try {
+      String responseText = makeRequest(String.format(MESSAGE_PATH_DEVICE, address, deviceId), "PUT", JsonUtil.toJson(bundle));
+
+      if (responseText == null) return new SendMessageResponse(false);
+      else                      return JsonUtil.fromJson(responseText, SendMessageResponse.class);
+    } catch (NotFoundException nfe) {
+      throw new UnregisteredUserException(address, nfe);
     }
   }
 
