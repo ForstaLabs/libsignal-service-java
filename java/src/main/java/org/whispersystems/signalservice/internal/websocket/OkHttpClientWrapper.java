@@ -142,7 +142,11 @@ public class OkHttpClientWrapper implements WebSocketListener {
   private SSLSocketFactory createTlsSocketFactory(TrustStore trustStore) {
     try {
       SSLContext context = SSLContext.getInstance("TLS");
-      context.init(null, BlacklistingTrustManager.createFor(trustStore), null);
+      if (trustStore != null) {
+        context.init(null, BlacklistingTrustManager.createFor(trustStore), null);
+      } else {
+        context.init(null, null, null);
+      }
 
       return context.getSocketFactory();
     } catch (NoSuchAlgorithmException | KeyManagementException e) {

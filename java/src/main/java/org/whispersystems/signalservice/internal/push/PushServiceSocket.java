@@ -103,7 +103,11 @@ public class PushServiceSocket {
   {
     this.serviceUrl          = serviceUrl;
     this.credentialsProvider = credentialsProvider;
-    this.trustManagers       = BlacklistingTrustManager.createFor(trustStore);
+    if (trustStore != null) {
+        this.trustManagers = BlacklistingTrustManager.createFor(trustStore);
+    } else {
+        this.trustManagers = null;
+    }
     this.userAgent           = userAgent;
   }
 
