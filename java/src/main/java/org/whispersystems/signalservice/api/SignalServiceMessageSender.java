@@ -153,7 +153,7 @@ public class SignalServiceMessageSender {
     long timestamp = message.getTimestamp();
     byte[] syncMessage = createMultiDeviceSentTranscriptContent(content, Optional.<SignalServiceAddress>absent(), timestamp);
     try {
-      sendMessage(recipients, timestamp, content, true);
+      sendMessage(recipients, timestamp, content, false);
     } finally {
       if (sendSync) {
         try {
@@ -169,7 +169,7 @@ public class SignalServiceMessageSender {
     byte[] content = createMessageContent(message);
     long timestamp = message.getTimestamp();
     try {
-      sendMessage(recipient, deviceId, timestamp, content, true);
+      sendMessage(recipient, deviceId, timestamp, content, false);
     } catch (UntrustedIdentityException e) {
       throw new EncapsulatedExceptions(e);
     }
