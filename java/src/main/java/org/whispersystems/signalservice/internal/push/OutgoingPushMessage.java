@@ -18,8 +18,6 @@ public class OutgoingPushMessage {
   @JsonProperty
   private int    destinationRegistrationId;
   @JsonProperty
-  private String body;
-  @JsonProperty
   private String content;
   @JsonProperty
   private long timestamp;
@@ -27,12 +25,11 @@ public class OutgoingPushMessage {
   public OutgoingPushMessage(int type,
                              int destinationDeviceId,
                              int destinationRegistrationId,
-                             String legacyMessage, String content, long timestamp)
+                             String content, long timestamp)
   {
     this.type                      = type;
     this.destinationDeviceId       = destinationDeviceId;
     this.destinationRegistrationId = destinationRegistrationId;
-    this.body                      = legacyMessage;
     this.content                   = content;
     this.timestamp                 = timestamp;
   }
